@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klaire API Test</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .result-box {
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Klaire API Test</h1>
+        
+        <!-- Recherche d'adresse -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="h5 mb-0">Rechercher une adresse</h2>
+            </div>
+            <div class="card-body">
+                <form id="addressForm" class="mb-3">
+                    <div class="mb-3">
+                        <label for="addressQuery" class="form-label">Adresse à rechercher</label>
+                        <input type="text" class="form-control" id="addressQuery" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Rechercher</button>
+                </form>
+                <div id="addressResult" class="result-box d-none">
+                    <h3 class="h6">Résultat :</h3>
+                    <pre id="addressResultContent"></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recherche de risques -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="h5 mb-0">Consulter les risques</h2>
+            </div>
+            <div class="card-body">
+                <form id="risksForm" class="mb-3">
+                    <div class="mb-3">
+                        <label for="addressId" class="form-label">ID de l'adresse</label>
+                        <input type="number" class="form-control" id="addressId" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Consulter les risques</button>
+                </form>
+                <div id="risksResult" class="result-box d-none">
+                    <h3 class="h6">Résultat :</h3>
+                    <pre id="risksResultContent"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Fonction pour afficher les résultats
+        function displayResult(elementId, content) {
+            const resultBox = document.getElementById(elementId);
+            const resultContent = document.getElementById(elementId + 'Content');
+            resultBox.classList.remove('d-none');
+            resultContent.textContent = JSON.stringify(content, null, 2);
+        }
+
+        // Gestionnaire pour la recherche d'adresse
+        document.getElementById('addressForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const query = document.getElementById('addressQuery').value;
+            
+            try {
+                const response = await fetch('/api/addresses/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ q: query })
+                });
+                
+                const data = await response.json();
+                displayResult('addressResult', data);
+            } catch (error) {
+                displayResult('addressResult', { error: error.message });
+            }
+        });
+
+        // Gestionnaire pour la recherche de risques
+        document.getElementById('risksForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('addressId').value;
+            
+            try {
+                const response = await fetch(`/api/addresses/${id}/risks/`);
+                const data = await response.json();
+                displayResult('risksResult', data);
+            } catch (error) {
+                displayResult('risksResult', { error: error.message });
+            }
+        });
+    </script>
+</body>
+</html> 
