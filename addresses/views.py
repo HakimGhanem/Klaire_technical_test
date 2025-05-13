@@ -66,17 +66,14 @@ class AddressSearchView(APIView):
 class AddressRisksView(APIView):
     def get(self, request, id):
         try:
-            address = get_object_or_404(Address, id=id)
-            
+            address = Address.objects.get(id=id)
             # Appel à l'API Géorisques
             georisques_response = requests.get(
                 'https://georisques.gouv.fr/api/v1/resultats_rapport_risque',
                 params={'latlon': f"{address.longitude},{address.latitude}"}
             )
             georisques_response.raise_for_status()
-            
             return Response(georisques_response.json(), status=status.HTTP_200_OK)
-
         except Address.DoesNotExist:
             return Response(
                 {"error": "Adresse non trouvée."},

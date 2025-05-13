@@ -38,7 +38,7 @@ docker compose build
 docker compose up
 ```
 
-L'API sera disponible sur [http://localhost:8000]
+L'API REST est disponible sur [http://localhost:8000/api/](http://localhost:8000/api/)
 
 ---
 
